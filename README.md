@@ -152,5 +152,5 @@ estimatedCo2Kg = distanceKm × facteurEmission
   }
 ---
 
-📌 **Dépôt de travail** : [https://github.com/LeoLhommeUtopios/Ecf\_Java/](https://github.com/LeoLhommeUtopios/Ecf_Java/)
+**Dépôt Git** : [https://github.com/utopios/ECF_05_AOUT_2025.git/](https://github.com/utopios/ECF_05_AOUT_2025.git/)
 
