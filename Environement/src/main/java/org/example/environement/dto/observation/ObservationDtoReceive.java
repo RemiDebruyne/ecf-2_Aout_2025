@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.example.environement.dto.travellogs.TravellogDtoReceive;
 import org.example.environement.entity.Observation;
 import org.example.environement.exception.NotFoundException;
+import org.example.environement.repository.ObservationRepository;
 import org.example.environement.repository.SpecieRepository;
 
 import java.time.LocalDate;
@@ -21,26 +22,29 @@ import java.util.stream.Collectors;
 public class ObservationDtoReceive {
     private String observerName;
     private String location;
-    private Double latitude,longitude;
+    private Double latitude, longitude;
     private String observationDateStr;
     private String comment;
     private long specieId;
     private List<TravellogDtoReceive> travellogs;
 
-    public Observation dtoToEntity (SpecieRepository specieRepository){
+    public Observation dtoToEntity(SpecieRepository specieRepository, ObservationRepository observationRepository) {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         Observation observationCreated = Observation.builder()
                 .observerName(this.getObserverName())
                 .location(this.getLocation())
                 .latitude(this.getLatitude())
                 .longitude(this.getLongitude())
-                .observationDate(LocalDate.parse(this.getObservationDateStr(),format))
+                .observationDate(LocalDate.parse(this.getObservationDateStr(), format))
                 .comment(this.getComment())
                 .specie(specieRepository.findById(this.getSpecieId()).orElseThrow(NotFoundException::new))
-                .travellogs(this.getTravellogs().stream().map(TravellogDtoReceive::dtoToEntity).collect(Collectors.toList()))
                 .build();
 
-        observationCreated.getTravellogs().forEach(t -> t.setObservation(observationCreated));
+        if (this.travellogs != null) {
+            observationCreated.setTravellogs(this.getTravellogs().stream().map(travellog -> travellog.dtoToEntity(observationRepository)).collect(Collectors.toList()));
+            observationCreated.getTravellogs().forEach(t -> t.setObservation(observationCreated));
+        }
+
         return observationCreated;
     }
 }

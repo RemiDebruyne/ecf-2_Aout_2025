@@ -39,7 +39,7 @@ public class Observation {
 
 
     public ObservationDtoResponse entityToDto (){
-        return ObservationDtoResponse.builder()
+        var observationDtoResponse = ObservationDtoResponse.builder()
                 .id(this.getId())
                 .observerName(this.getObserverName())
                 .location(this.getLocation())
@@ -48,7 +48,12 @@ public class Observation {
                 .observationDate(this.getObservationDate())
                 .comment(this.getComment())
                 .specie(this.getSpecie().entityToDto())
-                .travellogs(this.getTravellogs().stream().map(Travellog::entityToDto).collect(Collectors.toList()))
                 .build();
+
+        if(this.travellogs != null){
+            observationDtoResponse.setTravellogs(this.travellogs.stream().map(Travellog::entityToDto).collect(Collectors.toList()));
+        }
+
+        return observationDtoResponse;
     }
 }

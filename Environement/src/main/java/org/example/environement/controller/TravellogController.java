@@ -1,14 +1,12 @@
 package org.example.environement.controller;
 
+import org.example.environement.dto.travellogs.TravellogDtoReceive;
 import org.example.environement.dto.travellogs.TravellogDtoResponse;
 import org.example.environement.dto.travellogs.TravellogDtoStat;
 import org.example.environement.service.TravellogsService;
-import org.springframework.beans.propertyeditors.LocaleEditor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,17 +24,26 @@ public class TravellogController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TravellogDtoResponse>> getAllTravellogs (){
-        return ResponseEntity.ok(travellogsService.get(10));
+    public ResponseEntity<List<TravellogDtoResponse>> getAllTravellogs(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer pageSize) {
+        return ResponseEntity.ok(travellogsService.getAll(page, pageSize));
     }
 
-    @GetMapping("/stats/{id}")
-    public ResponseEntity<TravellogDtoStat> getStatFromObseration (@PathVariable long id){
-        return ResponseEntity.ok(travellogsService.getStat(id));
+    @GetMapping("/stats/{observationId}")
+    public ResponseEntity<TravellogDtoStat> getStatFromObseration(@PathVariable long observationId) {
+        return ResponseEntity.ok(travellogsService.getStats(observationId));
     }
 
     @GetMapping("/user/{name}")
-    public ResponseEntity<Map<String,TravellogDtoStat>> getTravelStatForUserOnLAstMonth (@PathVariable String name){
+    public ResponseEntity<Map<String, TravellogDtoStat>> getTravelStatForUserOnLAstMonth(@PathVariable String name) {
         return ResponseEntity.ok(travellogsService.getStatForUserLastMonth(name));
+    }
+
+    @PostMapping
+    public ResponseEntity<TravellogDtoResponse> create(@RequestBody TravellogDtoReceive travellogDtoReceive) {
+        TravellogDtoResponse travellogDtoResponse = travellogsService.add(travellogDtoReceive);
+
+        return ResponseEntity.ok(travellogDtoResponse);
     }
 }

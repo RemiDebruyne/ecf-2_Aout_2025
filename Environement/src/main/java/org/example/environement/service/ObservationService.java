@@ -5,7 +5,6 @@ import org.example.environement.dto.observation.ObservationDtoResponse;
 import org.example.environement.entity.Observation;
 import org.example.environement.exception.NotFoundException;
 import org.example.environement.repository.ObservationRepository;
-import org.example.environement.repository.ObservationRepositoryPaginate;
 import org.example.environement.repository.SpecieRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -18,22 +17,20 @@ import java.util.stream.Collectors;
 public class ObservationService {
 
     private final ObservationRepository observationRepository;
-    private final ObservationRepositoryPaginate observationRepositoryPaginate;
     private final SpecieRepository specieRepository ;
 
-    public ObservationService(ObservationRepository observationRepository, SpecieRepository specieRepository, ObservationRepositoryPaginate observationRepositoryPaginate) {
+    public ObservationService(ObservationRepository observationRepository, SpecieRepository specieRepository) {
         this.observationRepository = observationRepository;
         this.specieRepository = specieRepository;
-        this.observationRepositoryPaginate = observationRepositoryPaginate;
     }
 
     public ObservationDtoResponse create (ObservationDtoReceive observation){
-        return observationRepository.save(observation.dtoToEntity(specieRepository)).entityToDto();
+        return observationRepository.save(observation.dtoToEntity(specieRepository, observationRepository)).entityToDto();
     }
 
     public List<ObservationDtoResponse> get (int pageSize,int pageNumber){
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
-        return convertList(observationRepositoryPaginate.findAll(PageRequest.of(pageNumber, pageSize).withSort(sort)).getContent());
+        return convertList(observationRepository.findAll(PageRequest.of(pageNumber, pageSize).withSort(sort)).getContent());
     }
 
     public ObservationDtoResponse get (long id){

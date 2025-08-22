@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/specie")
+@RequestMapping("api/species")
 public class SpecieController {
 
     private final SpecieService specieService;
@@ -20,7 +20,9 @@ public class SpecieController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SpecieDtoResponse>> getSpecies (@RequestParam int pageSize, @RequestParam int pageNumber){
+    public ResponseEntity<List<SpecieDtoResponse>> getSpecies (
+            @RequestParam(required = false, defaultValue = "10") int pageSize,
+            @RequestParam(required = false, defaultValue = "0") int pageNumber){
         return ResponseEntity.ok(specieService.get(pageSize,pageNumber));
     }
 
